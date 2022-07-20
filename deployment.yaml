@@ -1,0 +1,62 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    creator: za-admin
+    description: tekton-demo
+    owner_name: tekton-demo
+    sidecar.istio.io/inject: 'false'
+  labels:
+    app: tekton-demo
+    version: latest
+  name: tekton-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tekton-demo
+      version: latest
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        creator: za-admin
+        description: tekton-demo
+        owner_name: tekton-demo
+        sidecar.istio.io/inject: 'false'
+      creationTimestamp:
+      labels:
+        app: tekton-demo
+        version: latest
+      name: tekton-demo
+      namespace: devops
+    spec:
+      containers:
+      - env:
+        image: IMAGE:TAG
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 5
+          initialDelaySeconds: 30
+          periodSeconds: 60
+          successThreshold: 1
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 2
+        name: tekton-demo
+        readinessProbe:
+          failureThreshold: 3
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        securityContext:
+          privileged: false
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/os: linux
+      restartPolicy: Always
+status: {}
